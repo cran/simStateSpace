@@ -5,7 +5,7 @@
 \title{Convert Parameters from the Ornstein–Uhlenbeck Model
 to State Space Model Parameterization}
 \usage{
-OU2SSM(mu, phi, sigma_sqrt, delta_t)
+OU2SSM(mu, phi, sigma, delta_t)
 }
 \arguments{
 \item{mu}{Numeric vector.
@@ -17,8 +17,8 @@ The rate of mean reversion,
 determining how quickly the variable returns to its mean
 (\eqn{\boldsymbol{\Phi}}).}
 
-\item{sigma_sqrt}{Numeric matrix.
-Cholesky decomposition of the matrix of volatility
+\item{sigma}{Numeric matrix.
+The matrix of volatility
 or randomness in the process
 (\eqn{\boldsymbol{\Sigma}}).}
 
@@ -28,14 +28,14 @@ Time interval (\eqn{\delta_t}).}
 \value{
 Returns a list of state space parameters:
 \itemize{
-\item alpha: Numeric vector.
+\item \code{alpha}: Numeric vector.
 Vector of intercepts for the dynamic model
 (\eqn{\boldsymbol{\alpha}}).
-\item beta: Numeric matrix.
+\item \code{beta}: Numeric matrix.
 Transition matrix relating the values of the latent variables
 at time \code{t - 1} to those at time \code{t}
 (\eqn{\boldsymbol{\beta}}).
-\item psi: Numeric matrix.
+\item \code{psi}: Numeric matrix.
 The process noise covariance matrix
 (\eqn{\boldsymbol{\Psi}}).
 }
@@ -43,7 +43,6 @@ The process noise covariance matrix
 \description{
 This function converts parameters from the Ornstein–Uhlenbeck model
 to state space model parameterization.
-See details for more information.
 }
 \details{
 The state space parameters
@@ -112,32 +111,37 @@ are given by
 \examples{
 p <- k <- 2
 mu <- c(5.76, 5.18)
-phi <- matrix(data = c(0.10, -0.05, -0.05, 0.10), nrow = p)
-sigma_sqrt <- chol(
-  matrix(data = c(2.79, 0.06, 0.06, 3.27), nrow = p)
+phi <- matrix(
+  data = c(0.10, -0.05, -0.05, 0.10),
+  nrow = p
+)
+sigma <- matrix(
+  data = c(2.79, 0.06, 0.06, 3.27),
+  nrow = p
 )
 delta_t <- 0.10
 
 OU2SSM(
   mu = mu,
   phi = phi,
-  sigma_sqrt = sigma_sqrt,
+  sigma = sigma,
   delta_t = delta_t
 )
 
 }
 \seealso{
 Other Simulation of State Space Models Data Functions: 
-\code{\link{Sim2Matrix}()},
-\code{\link{SimSSM0Fixed}()},
-\code{\link{SimSSM0Vary}()},
-\code{\link{SimSSM0}()},
+\code{\link{SimSSMFixed}()},
+\code{\link{SimSSMIVary}()},
+\code{\link{SimSSMLinGrowthIVary}()},
+\code{\link{SimSSMLinGrowth}()},
 \code{\link{SimSSMOUFixed}()},
-\code{\link{SimSSMOUVary}()},
+\code{\link{SimSSMOUIVary}()},
 \code{\link{SimSSMOU}()},
 \code{\link{SimSSMVARFixed}()},
-\code{\link{SimSSMVARVary}()},
-\code{\link{SimSSMVAR}()}
+\code{\link{SimSSMVARIVary}()},
+\code{\link{SimSSMVAR}()},
+\code{\link{SimSSM}()}
 }
 \author{
 Ivan Jacob Agaloos Pesigan

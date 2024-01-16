@@ -1,29 +1,33 @@
-## ---- test-simStateSpace-sim-ssm-ou-fixed
+## ---- test-simStateSpace-sim-ssm-i-vary
 lapply(
   X = 1,
   FUN = function(i,
                  text) {
     message(text)
     # prepare parameters
+    # In this example, beta varies across individuals
     set.seed(42)
-    p <- k <- 2
-    iden <- diag(p)
+    k <- p <- 3
+    iden <- diag(k)
+    null_vec <- rep(x = 0, times = k)
     n <- 5
-    mu0 <- c(-3.0, 1.5)
-    sigma0 <- iden
-    mu <- c(5.76, 5.18)
-    phi <- matrix(data = c(0.10, -0.05, -0.05, 0.10), nrow = p)
-    sigma <- matrix(
-      data = c(2.79, 0.06, 0.06, 3.27),
-      nrow = p
+    mu0 <- list(null_vec)
+    sigma0 <- list(iden)
+    alpha <- list(null_vec)
+    beta <- list(
+      diag(x = 0.1, nrow = k),
+      diag(x = 0.2, nrow = k),
+      diag(x = 0.3, nrow = k),
+      diag(x = 0.4, nrow = k),
+      diag(x = 0.5, nrow = k)
     )
-    nu <- rep(x = 0, times = k)
-    lambda <- diag(k)
-    theta <- diag(x = 0.50, nrow = k)
-    delta_t <- 0.10
+    psi <- list(iden)
+    nu <- list(null_vec)
+    lambda <- list(iden)
+    theta <- list(diag(x = 0.50, nrow = k))
     time <- 50
     burn_in <- 10
-    gamma_y <- gamma_eta <- 0.10 * diag(k)
+    gamma_y <- gamma_eta <- list(0.10 * diag(k))
     x <- lapply(
       X = seq_len(n),
       FUN = function(i) {
@@ -37,18 +41,17 @@ lapply(
     )
 
     # Type 0
-    ssm <- simStateSpace::SimSSMOUFixed(
+    ssm <- simStateSpace::SimSSMIVary(
       n = n,
       mu0 = mu0,
       sigma0 = sigma0,
-      mu = mu,
-      phi = phi,
-      sigma = sigma,
+      alpha = alpha,
+      beta = beta,
+      psi = psi,
       nu = nu,
       lambda = lambda,
       theta = theta,
       type = 0,
-      delta_t = delta_t,
       time = time,
       burn_in = burn_in
     )
@@ -62,24 +65,23 @@ lapply(
     as.matrix.simstatespace(ssm, eta = TRUE, long = FALSE)
     as.matrix.simstatespace(ssm, eta = FALSE, long = FALSE)
     print.simstatespace(ssm)
-    plot.simstatespace(ssm, id = 1:3, time = (0:4) * 0.10)
+    plot.simstatespace(ssm, id = 1:3, time = 0:4)
     plot.simstatespace(ssm, eta = TRUE)
 
     # Type 1
-    ssm <- simStateSpace::SimSSMOUFixed(
+    ssm <- simStateSpace::SimSSMIVary(
       n = n,
       mu0 = mu0,
       sigma0 = sigma0,
-      mu = mu,
-      phi = phi,
-      sigma = sigma,
+      alpha = alpha,
+      beta = beta,
+      psi = psi,
       nu = nu,
       lambda = lambda,
       theta = theta,
       gamma_eta = gamma_eta,
       x = x,
       type = 1,
-      delta_t = delta_t,
       time = time,
       burn_in = burn_in
     )
@@ -93,17 +95,17 @@ lapply(
     as.matrix.simstatespace(ssm, eta = TRUE, long = FALSE)
     as.matrix.simstatespace(ssm, eta = FALSE, long = FALSE)
     print.simstatespace(ssm)
-    plot.simstatespace(ssm, id = 1:3, time = (0:4) * 0.10)
+    plot.simstatespace(ssm, id = 1:3, time = 0:4)
     plot.simstatespace(ssm, eta = TRUE)
 
     # Type 2
-    ssm <- simStateSpace::SimSSMOUFixed(
+    ssm <- simStateSpace::SimSSMIVary(
       n = n,
       mu0 = mu0,
       sigma0 = sigma0,
-      mu = mu,
-      phi = phi,
-      sigma = sigma,
+      alpha = alpha,
+      beta = beta,
+      psi = psi,
       nu = nu,
       lambda = lambda,
       theta = theta,
@@ -111,7 +113,6 @@ lapply(
       gamma_eta = gamma_eta,
       x = x,
       type = 2,
-      delta_t = delta_t,
       time = time,
       burn_in = burn_in
     )
@@ -125,7 +126,7 @@ lapply(
     as.matrix.simstatespace(ssm, eta = TRUE, long = FALSE)
     as.matrix.simstatespace(ssm, eta = FALSE, long = FALSE)
     print.simstatespace(ssm)
-    plot.simstatespace(ssm, id = 1:3, time = (0:4) * 0.10)
+    plot.simstatespace(ssm, id = 1:3, time = 0:4)
     plot.simstatespace(ssm, eta = TRUE)
 
     # Error
@@ -133,13 +134,13 @@ lapply(
       paste(text, "error"),
       {
         testthat::expect_error(
-          simStateSpace::SimSSMOUFixed(
+          simStateSpace::SimSSMIVary(
             n = n,
             mu0 = mu0,
             sigma0 = sigma0,
-            mu = mu,
-            phi = phi,
-            sigma = sigma,
+            alpha = alpha,
+            beta = beta,
+            psi = psi,
             nu = nu,
             lambda = lambda,
             theta = theta,
@@ -147,7 +148,6 @@ lapply(
             gamma_eta = gamma_eta,
             x = x,
             type = 3,
-            delta_t = delta_t,
             time = time,
             burn_in = burn_in
           )
@@ -158,18 +158,17 @@ lapply(
       paste(text, "error type 1"),
       {
         testthat::expect_error(
-          simStateSpace::SimSSMOUFixed(
+          simStateSpace::SimSSMIVary(
             n = n,
             mu0 = mu0,
             sigma0 = sigma0,
-            mu = mu,
-            phi = phi,
-            sigma = sigma,
+            alpha = alpha,
+            beta = beta,
+            psi = psi,
             nu = nu,
             lambda = lambda,
             theta = theta,
             type = 1,
-            delta_t = delta_t,
             time = time,
             burn_in = burn_in
           )
@@ -180,18 +179,17 @@ lapply(
       paste(text, "error type 2"),
       {
         testthat::expect_error(
-          simStateSpace::SimSSMOUFixed(
+          simStateSpace::SimSSMIVary(
             n = n,
             mu0 = mu0,
             sigma0 = sigma0,
-            mu = mu,
-            phi = phi,
-            sigma = sigma,
+            alpha = alpha,
+            beta = beta,
+            psi = psi,
             nu = nu,
             lambda = lambda,
             theta = theta,
             type = 2,
-            delta_t = delta_t,
             time = time,
             burn_in = burn_in
           )
@@ -199,5 +197,5 @@ lapply(
       }
     )
   },
-  text = "test-simStateSpace-sim-ssm-ou-fixed"
+  text = "test-simStateSpace-sim-ssm-i-vary"
 )

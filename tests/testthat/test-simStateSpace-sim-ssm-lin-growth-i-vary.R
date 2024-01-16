@@ -1,56 +1,53 @@
-## ---- test-simStateSpace-sim-ssm-ou-fixed
+## ---- test-simStateSpace-sim-ssm-lin-growth-i-vary
 lapply(
   X = 1,
   FUN = function(i,
                  text) {
     message(text)
     # prepare parameters
+    # In this example, the mean vector of the intercept and slope vary.
+    # Specifically,
+    # there are two sets of values representing two latent classes.
     set.seed(42)
-    p <- k <- 2
-    iden <- diag(p)
-    n <- 5
-    mu0 <- c(-3.0, 1.5)
-    sigma0 <- iden
-    mu <- c(5.76, 5.18)
-    phi <- matrix(data = c(0.10, -0.05, -0.05, 0.10), nrow = p)
-    sigma <- matrix(
-      data = c(2.79, 0.06, 0.06, 3.27),
-      nrow = p
+    n <- 10
+    mu0_1 <- c(0.615, 1.006) # lower starting point, higher growth
+    mu0_2 <- c(1.000, 0.500) # higher starting point, lower growth
+    mu0 <- list(mu0_1, mu0_2)
+    sigma0 <- list(
+      matrix(
+        data = c(
+          1.932,
+          0.618,
+          0.618,
+          0.587
+        ),
+        nrow = 2
+      )
     )
-    nu <- rep(x = 0, times = k)
-    lambda <- diag(k)
-    theta <- diag(x = 0.50, nrow = k)
-    delta_t <- 0.10
-    time <- 50
-    burn_in <- 10
-    gamma_y <- gamma_eta <- 0.10 * diag(k)
+    theta <- list(0.6)
+    time <- 10
+    gamma_y <- list(matrix(data = 0.10, nrow = 1, ncol = 2))
+    gamma_eta <- list(matrix(data = 0.10, nrow = 2, ncol = 2))
     x <- lapply(
       X = seq_len(n),
       FUN = function(i) {
         return(
           matrix(
-            data = rnorm(n = k * (time + burn_in)),
-            ncol = k
+            data = rnorm(n = 2 * time),
+            ncol = 2
           )
         )
       }
     )
 
     # Type 0
-    ssm <- simStateSpace::SimSSMOUFixed(
+    ssm <- simStateSpace::SimSSMLinGrowthIVary(
       n = n,
       mu0 = mu0,
       sigma0 = sigma0,
-      mu = mu,
-      phi = phi,
-      sigma = sigma,
-      nu = nu,
-      lambda = lambda,
       theta = theta,
       type = 0,
-      delta_t = delta_t,
-      time = time,
-      burn_in = burn_in
+      time = time
     )
 
     as.data.frame.simstatespace(ssm, eta = TRUE)
@@ -62,26 +59,19 @@ lapply(
     as.matrix.simstatespace(ssm, eta = TRUE, long = FALSE)
     as.matrix.simstatespace(ssm, eta = FALSE, long = FALSE)
     print.simstatespace(ssm)
-    plot.simstatespace(ssm, id = 1:3, time = (0:4) * 0.10)
+    plot.simstatespace(ssm, id = 1:3, time = 0:4)
     plot.simstatespace(ssm, eta = TRUE)
 
     # Type 1
-    ssm <- simStateSpace::SimSSMOUFixed(
+    ssm <- simStateSpace::SimSSMLinGrowthIVary(
       n = n,
       mu0 = mu0,
       sigma0 = sigma0,
-      mu = mu,
-      phi = phi,
-      sigma = sigma,
-      nu = nu,
-      lambda = lambda,
       theta = theta,
       gamma_eta = gamma_eta,
       x = x,
       type = 1,
-      delta_t = delta_t,
-      time = time,
-      burn_in = burn_in
+      time = time
     )
 
     as.data.frame.simstatespace(ssm, eta = TRUE)
@@ -93,27 +83,20 @@ lapply(
     as.matrix.simstatespace(ssm, eta = TRUE, long = FALSE)
     as.matrix.simstatespace(ssm, eta = FALSE, long = FALSE)
     print.simstatespace(ssm)
-    plot.simstatespace(ssm, id = 1:3, time = (0:4) * 0.10)
+    plot.simstatespace(ssm, id = 1:3, time = 0:4)
     plot.simstatespace(ssm, eta = TRUE)
 
     # Type 2
-    ssm <- simStateSpace::SimSSMOUFixed(
+    ssm <- simStateSpace::SimSSMLinGrowthIVary(
       n = n,
       mu0 = mu0,
       sigma0 = sigma0,
-      mu = mu,
-      phi = phi,
-      sigma = sigma,
-      nu = nu,
-      lambda = lambda,
       theta = theta,
       gamma_y = gamma_y,
       gamma_eta = gamma_eta,
       x = x,
       type = 2,
-      delta_t = delta_t,
-      time = time,
-      burn_in = burn_in
+      time = time
     )
 
     as.data.frame.simstatespace(ssm, eta = TRUE)
@@ -125,7 +108,7 @@ lapply(
     as.matrix.simstatespace(ssm, eta = TRUE, long = FALSE)
     as.matrix.simstatespace(ssm, eta = FALSE, long = FALSE)
     print.simstatespace(ssm)
-    plot.simstatespace(ssm, id = 1:3, time = (0:4) * 0.10)
+    plot.simstatespace(ssm, id = 1:3, time = 0:4)
     plot.simstatespace(ssm, eta = TRUE)
 
     # Error
@@ -133,23 +116,16 @@ lapply(
       paste(text, "error"),
       {
         testthat::expect_error(
-          simStateSpace::SimSSMOUFixed(
+          simStateSpace::SimSSMLinGrowthIVary(
             n = n,
             mu0 = mu0,
             sigma0 = sigma0,
-            mu = mu,
-            phi = phi,
-            sigma = sigma,
-            nu = nu,
-            lambda = lambda,
             theta = theta,
             gamma_y = gamma_y,
             gamma_eta = gamma_eta,
             x = x,
             type = 3,
-            delta_t = delta_t,
-            time = time,
-            burn_in = burn_in
+            time = time
           )
         )
       }
@@ -158,20 +134,13 @@ lapply(
       paste(text, "error type 1"),
       {
         testthat::expect_error(
-          simStateSpace::SimSSMOUFixed(
+          simStateSpace::SimSSMLinGrowthIVary(
             n = n,
             mu0 = mu0,
             sigma0 = sigma0,
-            mu = mu,
-            phi = phi,
-            sigma = sigma,
-            nu = nu,
-            lambda = lambda,
             theta = theta,
             type = 1,
-            delta_t = delta_t,
-            time = time,
-            burn_in = burn_in
+            time = time
           )
         )
       }
@@ -180,24 +149,17 @@ lapply(
       paste(text, "error type 2"),
       {
         testthat::expect_error(
-          simStateSpace::SimSSMOUFixed(
+          simStateSpace::SimSSMLinGrowthIVary(
             n = n,
             mu0 = mu0,
             sigma0 = sigma0,
-            mu = mu,
-            phi = phi,
-            sigma = sigma,
-            nu = nu,
-            lambda = lambda,
             theta = theta,
             type = 2,
-            delta_t = delta_t,
-            time = time,
-            burn_in = burn_in
+            time = time
           )
         )
       }
     )
   },
-  text = "test-simStateSpace-sim-ssm-ou-fixed"
+  text = "test-simStateSpace-sim-ssm-lin-growth-i-vary"
 )
