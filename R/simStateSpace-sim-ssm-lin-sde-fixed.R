@@ -1,10 +1,10 @@
 #' Simulate Data from the
-#' Ornstein–Uhlenbeck Model
+#' Linear Stochastic Differential Equation Model
 #' using a State Space Model Parameterization
 #' (Fixed Parameters)
 #'
 #' This function simulates data from the
-#' Ornstein–Uhlenbeck (OU) model
+#' linear stochastic differential equation model
 #' using a state space model parameterization.
 #' It assumes that the parameters remain constant
 #' across individuals and over time.
@@ -94,10 +94,10 @@
 #'   \deqn{
 #'     \mathrm{d} \boldsymbol{\eta}_{i, t}
 #'     =
-#'     - \boldsymbol{\Phi}
 #'     \left(
-#'     \boldsymbol{\mu}
-#'     -
+#'     \boldsymbol{\iota}
+#'     +
+#'     \boldsymbol{\Phi}
 #'     \boldsymbol{\eta}_{i, t}
 #'     \right)
 #'     \mathrm{d}t
@@ -107,11 +107,12 @@
 #'     \mathbf{W}_{i, t}
 #'   }
 #'   where
-#'   \eqn{\boldsymbol{\mu}}
-#'   is the long-term mean or equilibrium level,
-#'   \eqn{- \boldsymbol{\Phi}}
-#'   is the rate of mean reversion,
-#'   determining how quickly the variable returns to its mean,
+#'   \eqn{\boldsymbol{\iota}}
+#'   is a term which is unobserved and constant over time,
+#'   \eqn{\boldsymbol{\Phi}}
+#'   is the drift matrix
+#'   which represents the rate of change of the solution
+#'   in the absence of any random fluctuations,
 #'   \eqn{\boldsymbol{\Sigma}}
 #'   is the matrix of volatility
 #'   or randomness in the process, and
@@ -147,10 +148,10 @@
 #'   \deqn{
 #'     \mathrm{d} \boldsymbol{\eta}_{i, t}
 #'     =
-#'     - \boldsymbol{\Phi}
 #'     \left(
-#'     \boldsymbol{\mu}
-#'     -
+#'     \boldsymbol{\iota}
+#'     +
+#'     \boldsymbol{\Phi}
 #'     \boldsymbol{\eta}_{i, t}
 #'     \right)
 #'     \mathrm{d}t
@@ -202,10 +203,10 @@
 #'   \deqn{
 #'     \mathrm{d} \boldsymbol{\eta}_{i, t}
 #'     =
-#'     - \boldsymbol{\Phi}
 #'     \left(
-#'     \boldsymbol{\mu}
-#'     -
+#'     \boldsymbol{\iota}
+#'     +
+#'     \boldsymbol{\Phi}
 #'     \boldsymbol{\eta}_{i, t}
 #'     \right)
 #'     \mathrm{d}t
@@ -218,31 +219,78 @@
 #'     \mathbf{W}_{i, t} .
 #'   }
 #'
-#' ## The OU model as a linear stochastic differential equation model
+#' ## State Space Parameterization
 #'
-#'   The OU model is a first-order
-#'   linear stochastic differential equation model
-#'   in the form of
+#'   The state space parameters
+#'   as a function of the linear stochastic differential equation model
+#'   parameters
+#'   are given by
+#'   \deqn{
+#'       \boldsymbol{\beta}_{\Delta t_{{l_{i}}}}
+#'       =
+#'       \exp{
+#'         \left(
+#'           \Delta t
+#'           \boldsymbol{\Phi}
+#'         \right)
+#'       }
+#'   }
 #'
 #'   \deqn{
-#'     \mathrm{d} \boldsymbol{\eta}_{i, t}
-#'     =
-#'     \left(
-#'     \boldsymbol{\iota}
-#'     +
-#'     \boldsymbol{\Phi}
-#'     \boldsymbol{\eta}_{i, t}
-#'     \right)
-#'     \mathrm{d}t
-#'     +
-#'     \boldsymbol{\Sigma}^{\frac{1}{2}}
-#'     \mathrm{d}
-#'     \mathbf{W}_{i, t}
+#'       \boldsymbol{\alpha}_{\Delta t_{{l_{i}}}}
+#'       =
+#'       \boldsymbol{\Phi}^{-1}
+#'       \left(
+#'         \boldsymbol{\beta} - \mathbf{I}_{p}
+#'       \right)
+#'       \boldsymbol{\iota}
 #'   }
-#'   where
-#'   \eqn{\boldsymbol{\mu} = - \boldsymbol{\Phi}^{-1} \boldsymbol{\iota}}
-#'   and, equivalently
-#'   \eqn{\boldsymbol{\iota} = - \boldsymbol{\Phi} \boldsymbol{\mu}}.
+#'
+#'   \deqn{
+#'       \mathrm{vec}
+#'       \left(
+#'         \boldsymbol{\Psi}_{\Delta t_{{l_{i}}}}
+#'       \right)
+#'       =
+#'       \left[
+#'         \left(
+#'           \boldsymbol{\Phi} \otimes \mathbf{I}_{p}
+#'         \right)
+#'         +
+#'         \left(
+#'           \mathbf{I}_{p} \otimes \boldsymbol{\Phi}
+#'         \right)
+#'       \right]
+#'       \left[
+#'         \exp
+#'         \left(
+#'           \left[
+#'             \left(
+#'               \boldsymbol{\Phi} \otimes \mathbf{I}_{p}
+#'             \right)
+#'             +
+#'             \left(
+#'               \mathbf{I}_{p} \otimes \boldsymbol{\Phi}
+#'             \right)
+#'           \right]
+#'           \Delta t
+#'         \right)
+#'         -
+#'         \mathbf{I}_{p \times p}
+#'       \right]
+#'       \mathrm{vec}
+#'       \left(
+#'         \boldsymbol{\Sigma}
+#'       \right)
+#'   }
+#'   where \eqn{p} is the number of latent variables and
+#'   \eqn{\Delta t} is the time interval.
+#'
+#' @author Ivan Jacob Agaloos Pesigan
+#'
+#' @inheritParams LinSDE2SSM
+#' @inheritParams SimSSMFixed
+#' @inherit SimSSMFixed references return
 #'
 #' @references
 #'   Chow, S.-M., Ho, M. R., Hamaker, E. L., & Dolan, C. V. (2010).
@@ -264,35 +312,6 @@
 #'   Cambridge University Press.
 #'   \doi{10.1017/cbo9781107049994}
 #'
-#'   Oravecz, Z., Tuerlinckx, F., & Vandekerckhove, J. (2011).
-#'   A hierarchical latent stochastic differential equation model
-#'   for affective dynamics.
-#'   Psychological Methods,
-#'   16 (4), 468–490.
-#'   \doi{10.1037/a0024375}
-#'
-#'   Uhlenbeck, G. E., & Ornstein, L. S. (1930).
-#'   On the theory of the brownian motion.
-#'   Physical Review,
-#'   36 (5), 823–841.
-#'   \doi{10.1103/physrev.36.823}
-#'
-#' @author Ivan Jacob Agaloos Pesigan
-#'
-#' @param mu Numeric vector.
-#'   The long-term mean or equilibrium level
-#'   (\eqn{\boldsymbol{\mu}}).
-#' @param phi Numeric matrix.
-#'   The drift matrix
-#'   which represents the rate of change of the solution
-#'   in the absence of any random fluctuations
-#'   (\eqn{\boldsymbol{\Phi}}).
-#'   The negative value of `phi` is the rate of mean reversion,
-#'   determining how quickly the variable returns to its mean
-#'   (\eqn{- \boldsymbol{\Phi}}).
-#' @inheritParams SimSSMLinSDEFixed
-#' @inherit SimSSMFixed return
-#'
 #' @examples
 #' # prepare parameters
 #' set.seed(42)
@@ -306,7 +325,7 @@
 #' mu0 <- c(-3.0, 1.5)
 #' sigma0 <- 0.001 * diag(p)
 #' sigma0_l <- t(chol(sigma0))
-#' mu <- c(5.76, 5.18)
+#' iota <- c(0.317, 0.230)
 #' phi <- matrix(
 #'   data = c(
 #'     -0.10,
@@ -348,13 +367,13 @@
 #' kappa <- diag(x = 0.10, nrow = k, ncol = j)
 #'
 #' # Type 0
-#' ssm <- SimSSMOUFixed(
+#' ssm <- SimSSMLinSDEFixed(
 #'   n = n,
 #'   time = time,
 #'   delta_t = delta_t,
 #'   mu0 = mu0,
 #'   sigma0_l = sigma0_l,
-#'   mu = mu,
+#'   iota = iota,
 #'   phi = phi,
 #'   sigma_l = sigma_l,
 #'   nu = nu,
@@ -366,13 +385,13 @@
 #' plot(ssm)
 #'
 #' # Type 1
-#' ssm <- SimSSMOUFixed(
+#' ssm <- SimSSMLinSDEFixed(
 #'   n = n,
 #'   time = time,
 #'   delta_t = delta_t,
 #'   mu0 = mu0,
 #'   sigma0_l = sigma0_l,
-#'   mu = mu,
+#'   iota = iota,
 #'   phi = phi,
 #'   sigma_l = sigma_l,
 #'   nu = nu,
@@ -386,13 +405,13 @@
 #' plot(ssm)
 #'
 #' # Type 2
-#' ssm <- SimSSMOUFixed(
+#' ssm <- SimSSMLinSDEFixed(
 #'   n = n,
 #'   time = time,
 #'   delta_t = delta_t,
 #'   mu0 = mu0,
 #'   sigma0_l = sigma0_l,
-#'   mu = mu,
+#'   iota = iota,
 #'   phi = phi,
 #'   sigma_l = sigma_l,
 #'   nu = nu,
@@ -407,15 +426,14 @@
 #' plot(ssm)
 #'
 #' @family Simulation of State Space Models Data Functions
-#' @keywords simStateSpace sim ou
+#' @keywords simStateSpace sim linsde
 #' @export
-SimSSMOUFixed <- function(n, time, delta_t = 1.0,
-                          mu0, sigma0_l,
-                          mu, phi, sigma_l,
-                          nu, lambda, theta_l,
-                          type = 0,
-                          x = NULL, gamma = NULL, kappa = NULL) {
-  iota <- -phi %*% mu
+SimSSMLinSDEFixed <- function(n, time, delta_t = 1.0,
+                              mu0, sigma0_l,
+                              iota, phi, sigma_l,
+                              nu, lambda, theta_l,
+                              type = 0,
+                              x = NULL, gamma = NULL, kappa = NULL) {
   ssm <- LinSDE2SSM(
     iota = iota,
     phi = phi,
@@ -432,12 +450,11 @@ SimSSMOUFixed <- function(n, time, delta_t = 1.0,
   )
   out$args <- c(
     out$args,
-    mu = mu,
     iota = iota,
     phi = phi,
     sigma_l = sigma_l
   )
-  out$model$model <- "ou"
-  out$fun <- "SimSSMOUFixed"
+  out$model$model <- "linsde"
+  out$fun <- "SimSSMLinSDEFixed"
   return(out)
 }

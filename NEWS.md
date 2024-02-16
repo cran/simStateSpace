@@ -1,3 +1,7 @@
+# simStateSpace 1.2.0
+
+* Added functions to generate linear stochastic differential equation models.
+
 # simStateSpace 1.1.0
 
 * Added functions to generate data for models with covariates.
