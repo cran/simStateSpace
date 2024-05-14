@@ -136,7 +136,7 @@
 #'   Cholesky factorization (`t(chol(sigma))`)
 #'   of the covariance matrix of volatility
 #'   or randomness in the process
-#'   \eqn{\boldsymbol{\Sigma}}.
+#'   (\eqn{\boldsymbol{\Sigma}}).
 #' @param delta_t Numeric.
 #'   Time interval
 #'   (\eqn{\Delta_t}).
@@ -186,7 +186,7 @@
 #' )
 #'
 #' @family Simulation of State Space Models Data Functions
-#' @keywords simStateSpace sim linsde
+#' @keywords simStateSpace transformation linsde
 #' @export
 LinSDE2SSM <- function(iota, phi, sigma_l, delta_t) {
     .Call(`_simStateSpace_LinSDE2SSM`, iota, phi, sigma_l, delta_t)

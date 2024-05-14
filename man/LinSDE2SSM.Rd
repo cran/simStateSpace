@@ -22,7 +22,7 @@ in the absence of any random fluctuations
 Cholesky factorization (\code{t(chol(sigma))})
 of the covariance matrix of volatility
 or randomness in the process
-\eqn{\boldsymbol{\Sigma}}.}
+(\eqn{\boldsymbol{\Sigma}}).}
 
 \item{delta_t}{Numeric.
 Time interval
@@ -214,5 +214,5 @@ Ivan Jacob Agaloos Pesigan
 }
 \concept{Simulation of State Space Models Data Functions}
 \keyword{linsde}
-\keyword{sim}
 \keyword{simStateSpace}
+\keyword{transformation}
