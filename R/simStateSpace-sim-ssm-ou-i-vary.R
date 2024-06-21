@@ -41,9 +41,8 @@
 #'   which represents the rate of change of the solution
 #'   in the absence of any random fluctuations
 #'   (\eqn{\boldsymbol{\Phi}}).
-#'   The negative value of `phi` is the rate of mean reversion,
-#'   determining how quickly the variable returns to its mean
-#'   (\eqn{- \boldsymbol{\Phi}}).
+#'   It also represents the rate of mean reversion,
+#'   determining how quickly the variable returns to its mean.
 #' @param sigma_l List of numeric matrix.
 #'   Each element of the list
 #'   is the Cholesky factorization (`t(chol(sigma))`)
@@ -203,7 +202,7 @@ SimSSMOUIVary <- function(n, time, delta_t = 1.0,
     data <- .SimSSMLinSDEIVary0(
       n = n,
       time = time,
-      delta_t = 1.0,
+      delta_t = delta_t,
       mu0 = rep(x = mu0, length.out = n),
       sigma0_l = rep(x = sigma0_l, length.out = n),
       iota = rep(x = mu, length.out = n),
@@ -223,7 +222,7 @@ SimSSMOUIVary <- function(n, time, delta_t = 1.0,
     data <- .SimSSMLinSDEIVary1(
       n = n,
       time = time,
-      delta_t = 1.0,
+      delta_t = delta_t,
       mu0 = rep(x = mu0, length.out = n),
       sigma0_l = rep(x = sigma0_l, length.out = n),
       iota = rep(x = mu, length.out = n),
@@ -246,7 +245,7 @@ SimSSMOUIVary <- function(n, time, delta_t = 1.0,
     data <- .SimSSMLinSDEIVary2(
       n = n,
       time = time,
-      delta_t = 1.0,
+      delta_t = delta_t,
       mu0 = rep(x = mu0, length.out = n),
       sigma0_l = rep(x = sigma0_l, length.out = n),
       iota = rep(x = mu, length.out = n),

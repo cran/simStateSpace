@@ -280,6 +280,8 @@ and state-space modeling techniques.
 \seealso{
 Other Simulation of State Space Models Data Functions: 
 \code{\link{LinSDE2SSM}()},
+\code{\link{SimBetaN}()},
+\code{\link{SimPhiN}()},
 \code{\link{SimSSMFixed}()},
 \code{\link{SimSSMLinGrowth}()},
 \code{\link{SimSSMLinGrowthIVary}()},
@@ -288,7 +290,10 @@ Other Simulation of State Space Models Data Functions:
 \code{\link{SimSSMOUFixed}()},
 \code{\link{SimSSMOUIVary}()},
 \code{\link{SimSSMVARFixed}()},
-\code{\link{SimSSMVARIVary}()}
+\code{\link{SimSSMVARIVary}()},
+\code{\link{TestPhi}()},
+\code{\link{TestStability}()},
+\code{\link{TestStationarity}()}
 }
 \author{
 Ivan Jacob Agaloos Pesigan

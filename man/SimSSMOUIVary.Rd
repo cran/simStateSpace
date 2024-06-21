@@ -63,9 +63,8 @@ is the drift matrix
 which represents the rate of change of the solution
 in the absence of any random fluctuations
 (\eqn{\boldsymbol{\Phi}}).
-The negative value of \code{phi} is the rate of mean reversion,
-determining how quickly the variable returns to its mean
-(\eqn{- \boldsymbol{\Phi}}).}
+It also represents the rate of mean reversion,
+determining how quickly the variable returns to its mean.}
 
 \item{sigma_l}{List of numeric matrix.
 Each element of the list
@@ -325,6 +324,8 @@ Physical Review,
 \seealso{
 Other Simulation of State Space Models Data Functions: 
 \code{\link{LinSDE2SSM}()},
+\code{\link{SimBetaN}()},
+\code{\link{SimPhiN}()},
 \code{\link{SimSSMFixed}()},
 \code{\link{SimSSMIVary}()},
 \code{\link{SimSSMLinGrowth}()},
@@ -333,7 +334,10 @@ Other Simulation of State Space Models Data Functions:
 \code{\link{SimSSMLinSDEIVary}()},
 \code{\link{SimSSMOUFixed}()},
 \code{\link{SimSSMVARFixed}()},
-\code{\link{SimSSMVARIVary}()}
+\code{\link{SimSSMVARIVary}()},
+\code{\link{TestPhi}()},
+\code{\link{TestStability}()},
+\code{\link{TestStationarity}()}
 }
 \author{
 Ivan Jacob Agaloos Pesigan
