@@ -1,3 +1,9 @@
+# simStateSpace 1.2.3
+
+## Patch
+
+* Replaced `arma::inv` with `arma::solve`.
+
 # simStateSpace 1.2.2
 
 ## Patch

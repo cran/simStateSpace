@@ -1,7 +1,7 @@
-36733b703af9aa6f658b0c1db9d7fdc0 *DESCRIPTION
+ef3db60048d5dd91b9ef754186a09c8d *DESCRIPTION
 075c6ec96baf5512bf88d9e3f79ab405 *NAMESPACE
-24a8b8356c39254bd7bc19eefbeef3a2 *NEWS.md
-803853b73dbe4d356d281b6635a6f18d *R/RcppExports.R
+cec9d8b28e20cab7ef141accec22abdb *NEWS.md
+662547a333ceff7a4b2c026ef0cf5a6e *R/RcppExports.R
 5c9de5b9c2a1d3b3c7efdac7aa6ab0a4 *R/methods.R
 c054bacb1a5515b91eff83f25d04eb53 *R/simStateSpace-package.R
 fdd41996ab85f292386e8514a59a4540 *R/simStateSpace-sim-ssm-fixed.R
@@ -17,8 +17,8 @@ a875b52e98dd9931dfd8b5e9ef6eb0f7 *R/simStateSpace-sim-ssm-var-i-vary.R
 aa5e5a2cbfaea3d9b6cdbe378ac48cee *build/partial.rdb
 628db4a60d46c31f89a9f2c9ca6e76e1 *inst/CITATION
 6604bb224ceb32d7807e4886d6da83ae *man/LinSDE2SSM.Rd
-20d94ecfb0432de676fbd97fdbf9e283 *man/SimBetaN.Rd
-d0b419b670518e80858030ed03532535 *man/SimPhiN.Rd
+37f7d56081eb39ec8f7b6331d9613f36 *man/SimBetaN.Rd
+4d666867aca1362eba4de808bc909129 *man/SimPhiN.Rd
 29eab0a73dadb46ae2c2b1097548c458 *man/SimSSMFixed.Rd
 dbea85d1eb74e1928b6ee2bedbfcceed *man/SimSSMIVary.Rd
 16708687f0db713c609609dd81f021eb *man/SimSSMLinGrowth.Rd
@@ -40,7 +40,7 @@ cbd6d30cf20930f533372261b0338d87 *man/plot.simstatespace.Rd
 c89d6b95d18721894ab45341d0fbc7a6 *src/Makevars
 c89d6b95d18721894ab45341d0fbc7a6 *src/Makevars.win
 c5b2ac9414e4cc71a14a9b2b317934eb *src/RcppExports.cpp
-b44f76c66bb44bc31758fabd1387dcd6 *src/source.cpp
+b852c030a2df75c19ccc39a18513e1b8 *src/source.cpp
 ad3104831868d8b5c64fae7b28f4f193 *tests/testthat.R
 819f00562735cf0749e315d984dddbe6 *tests/testthat/test-simStateSpace-sim-beta-n.R
 0e4eee3a14753a33578f605a8212c6eb *tests/testthat/test-simStateSpace-sim-phi-n.R
