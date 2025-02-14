@@ -1,3 +1,9 @@
+# simStateSpace 1.2.9
+
+## Patch
+
+* Added the `LinSDECov()` and `LinSDEMean()` functions.
+
 # simStateSpace 1.2.8
 
 ## Patch
