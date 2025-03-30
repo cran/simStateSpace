@@ -1,8 +1,8 @@
-5e4ef49ed4f4ee25d426c9278f8fac54 *DESCRIPTION
+eed2574af2922606d5a04f3a91a0f765 *DESCRIPTION
 44c62d383eb51c158ec6f9c8caf16b9e *NAMESPACE
-82b0ffeb7a84c3c762229c6368ccb48c *NEWS.md
-bc17628b0af75f229078d9c41315de31 *R/RcppExports.R
-db9965905746da3b5dd0d96810d7b872 *R/simStateSpace-lin-sde-cov.R
+10595d41e849224a63fd22c0f1ab6014 *NEWS.md
+3dd50dc878896e53e5c1d30582c69c9a *R/RcppExports.R
+d8b6d7476f197851002a5db57cca36cf *R/simStateSpace-lin-sde-cov.R
 cc98adbf464d12e6f05ea5e8b8b6fdd0 *R/simStateSpace-lin-sde-mean.R
 3925d91b7434812785f974888e9a58c9 *R/simStateSpace-long-dot.R
 9a34dc34bc7fb11390f5649d2d1c451f *R/simStateSpace-methods-simstatespace.R
@@ -18,7 +18,7 @@ c84803e8c5f5771612890a3a3435cb22 *R/simStateSpace-sim-ssm-ou-i-vary.R
 ec0ce17a04273a556a8b7f4db63b4dce *R/simStateSpace-sim-ssm-var-fixed.R
 fc52cea5ca41bcd28fa12c00deb276fd *R/simStateSpace-sim-ssm-var-i-vary.R
 2911993bbfc6f65402b27a756a1a9405 *R/simStateSpace-wide-dot.R
-76161b65639451c966be75488458b3c3 *build/partial.rdb
+4454e632feb75ce4f508807d50b3b12f *build/partial.rdb
 628db4a60d46c31f89a9f2c9ca6e76e1 *inst/CITATION
 fbbe6b735d8a2b4880a80b40e0a96f86 *man/LinSDE2SSM.Rd
 3458877d6b820b7f3ce74dfbb8f995bf *man/LinSDECov.Rd
@@ -45,10 +45,11 @@ c525144ee3dd1233d47d217bf765ce10 *man/print.simstatespace.Rd
 4d0099bf258956486a88f5a5f9fc1a72 *man/simStateSpace-package.Rd
 c89d6b95d18721894ab45341d0fbc7a6 *src/Makevars
 c89d6b95d18721894ab45341d0fbc7a6 *src/Makevars.win
-1043868cf8916963855421bf954d4d56 *src/RcppExports.cpp
-7dce40041366f1bdaef736934aae67e7 *src/source.cpp
+7b47ed4cc90b5844f1a88989ac3f5829 *src/RcppExports.cpp
+85c998975b8197c1d0fe9b258fbf32cd *src/source.cpp
 ad3104831868d8b5c64fae7b28f4f193 *tests/testthat.R
-7aa917a58c3408154ccaa96dfb3f073d *tests/testthat/test-simStateSpace-lin-sde-cov.R
+ba70bf35f35ebe6a6833752d9116ae1a *tests/testthat/Rplots.pdf
+943cb95297fc62201163a0e56eb87b81 *tests/testthat/test-simStateSpace-lin-sde-cov.R
 e807845fef8bc403ff8207b489c784f5 *tests/testthat/test-simStateSpace-lin-sde-mean.R
 16acd828e33a002aad591183896599d8 *tests/testthat/test-simStateSpace-sim-beta-n.R
 a98b59549cc0354083ebc01e9da5c3db *tests/testthat/test-simStateSpace-sim-phi-n.R
