@@ -13,7 +13,7 @@ lapply(
         ## number of individuals
         n <- 5
         ## time points
-        time <- 5
+        time <- 50
         ## dynamic structure
         p <- 2
         mu0 <- c(0.615, 1.006)
@@ -59,13 +59,18 @@ lapply(
         as.data.frame.simstatespace(ssm, eta = FALSE)
         as.data.frame.simstatespace(ssm, eta = TRUE, long = FALSE)
         as.data.frame.simstatespace(ssm, eta = FALSE, long = FALSE)
+        as.data.frame.simstatespace(ssm, burnin = 5, reset_time = TRUE)
+        as.data.frame.simstatespace(ssm, burnin = 5, reset_time = FALSE)
         as.matrix.simstatespace(ssm, eta = TRUE)
         as.matrix.simstatespace(ssm, eta = FALSE)
         as.matrix.simstatespace(ssm, eta = TRUE, long = FALSE)
         as.matrix.simstatespace(ssm, eta = FALSE, long = FALSE)
+        as.matrix.simstatespace(ssm, burnin = 5, reset_time = TRUE)
+        as.matrix.simstatespace(ssm, burnin = 5, reset_time = FALSE)
         print.simstatespace(ssm)
         plot.simstatespace(ssm, id = 1:3, time = 0:4)
         plot.simstatespace(ssm, eta = TRUE)
+        plot.simstatespace(ssm, burnin = 5, reset_time = FALSE)
 
         # Type 1
         ssm <- SimSSMLinGrowth(
@@ -83,13 +88,18 @@ lapply(
         as.data.frame.simstatespace(ssm, eta = FALSE)
         as.data.frame.simstatespace(ssm, eta = TRUE, long = FALSE)
         as.data.frame.simstatespace(ssm, eta = FALSE, long = FALSE)
+        as.data.frame.simstatespace(ssm, burnin = 5, reset_time = TRUE)
+        as.data.frame.simstatespace(ssm, burnin = 5, reset_time = FALSE)
         as.matrix.simstatespace(ssm, eta = TRUE)
         as.matrix.simstatespace(ssm, eta = FALSE)
         as.matrix.simstatespace(ssm, eta = TRUE, long = FALSE)
         as.matrix.simstatespace(ssm, eta = FALSE, long = FALSE)
+        as.matrix.simstatespace(ssm, burnin = 5, reset_time = TRUE)
+        as.matrix.simstatespace(ssm, burnin = 5, reset_time = FALSE)
         print.simstatespace(ssm)
         plot.simstatespace(ssm, id = 1:3, time = 0:4)
         plot.simstatespace(ssm, eta = TRUE)
+        plot.simstatespace(ssm, burnin = 5, reset_time = FALSE)
 
         # Type 2
         ssm <- SimSSMLinGrowth(
@@ -108,13 +118,25 @@ lapply(
         as.data.frame.simstatespace(ssm, eta = FALSE)
         as.data.frame.simstatespace(ssm, eta = TRUE, long = FALSE)
         as.data.frame.simstatespace(ssm, eta = FALSE, long = FALSE)
+        as.data.frame.simstatespace(ssm, burnin = 5, reset_time = TRUE)
+        as.data.frame.simstatespace(ssm, burnin = 5, reset_time = FALSE)
         as.matrix.simstatespace(ssm, eta = TRUE)
         as.matrix.simstatespace(ssm, eta = FALSE)
         as.matrix.simstatespace(ssm, eta = TRUE, long = FALSE)
         as.matrix.simstatespace(ssm, eta = FALSE, long = FALSE)
+        as.matrix.simstatespace(ssm, burnin = 5, reset_time = TRUE)
+        as.matrix.simstatespace(ssm, burnin = 5, reset_time = FALSE)
         print.simstatespace(ssm)
         plot.simstatespace(ssm, id = 1:3, time = 0:4)
         plot.simstatespace(ssm, eta = TRUE)
+        plot.simstatespace(ssm, burnin = 5, reset_time = FALSE)
+
+        testthat::expect_error(
+          as.matrix.simstatespace(ssm, burnin = time),
+          regexp = paste0(
+            "`burnin` should not be greater than the measurement occasions.\n"
+          )
+        )
 
         testthat::expect_true(
           TRUE

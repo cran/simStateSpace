@@ -32,10 +32,25 @@ TestStationarity(x)
 \seealso{
 Other Simulation of State Space Models Data Functions: 
 \code{\link{LinSDE2SSM}()},
-\code{\link{LinSDECov}()},
-\code{\link{LinSDEMean}()},
+\code{\link{LinSDECovEta}()},
+\code{\link{LinSDECovY}()},
+\code{\link{LinSDEMeanEta}()},
+\code{\link{LinSDEMeanY}()},
+\code{\link{ProjectToHurwitz}()},
+\code{\link{ProjectToStability}()},
+\code{\link{SSMCovEta}()},
+\code{\link{SSMCovY}()},
+\code{\link{SSMMeanEta}()},
+\code{\link{SSMMeanY}()},
+\code{\link{SimAlphaN}()},
 \code{\link{SimBetaN}()},
+\code{\link{SimBetaN2}()},
+\code{\link{SimCovDiagN}()},
+\code{\link{SimCovN}()},
+\code{\link{SimIotaN}()},
+\code{\link{SimNuN}()},
 \code{\link{SimPhiN}()},
+\code{\link{SimPhiN2}()},
 \code{\link{SimSSMFixed}()},
 \code{\link{SimSSMIVary}()},
 \code{\link{SimSSMLinGrowth}()},
@@ -46,7 +61,9 @@ Other Simulation of State Space Models Data Functions:
 \code{\link{SimSSMOUIVary}()},
 \code{\link{SimSSMVARFixed}()},
 \code{\link{SimSSMVARIVary}()},
+\code{\link{SpectralRadius}()},
 \code{\link{TestPhi}()},
+\code{\link{TestPhiHurwitz}()},
 \code{\link{TestStability}()}
 }
 \author{

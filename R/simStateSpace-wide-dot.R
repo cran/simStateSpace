@@ -1,8 +1,12 @@
 .Wide <- function(x,
-                  eta) {
+                  eta,
+                  burnin = 0,
+                  reset_time = TRUE) {
   long <- .Long(
     x = x,
-    eta = eta
+    eta = eta,
+    burnin = burnin,
+    reset_time = reset_time
   )
   dims <- attributes(long)
   out <- as.matrix(
@@ -18,6 +22,7 @@
   )
   rownames(out) <- NULL
   attributes(out)$n <- dims$n
+  attributes(out)$m <- dims$m
   attributes(out)$k <- dims$k
   attributes(out)$p <- dims$p
   attributes(out)$j <- dims$j

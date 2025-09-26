@@ -192,13 +192,178 @@ LinSDE2SSM <- function(iota, phi, sigma_l, delta_t) {
     .Call(`_simStateSpace_LinSDE2SSM`, iota, phi, sigma_l, delta_t)
 }
 
-#' Simulate Transition Matrices
+.LinSDECovEta <- function(phi, sigma) {
+    .Call(`_simStateSpace_LinSDECovEta`, phi, sigma)
+}
+
+.LinSDECovY <- function(lambda, theta, cov_eta) {
+    .Call(`_simStateSpace_LinSDECovY`, lambda, theta, cov_eta)
+}
+
+.LinSDEMeanEta <- function(phi, iota) {
+    .Call(`_simStateSpace_LinSDEMeanEta`, phi, iota)
+}
+
+.LinSDEMeanY <- function(nu, lambda, mean_eta) {
+    .Call(`_simStateSpace_LinSDEMeanY`, nu, lambda, mean_eta)
+}
+
+#' Project Matrix to Hurwitz Stability
+#'
+#' Shifts a square matrix left on the real axis
+#' so that its spectral abscissa (maximum real part of the eigenvalues)
+#' is strictly less than `-margin`.
+#' This is useful for ensuring that continuous-time drift matrices
+#' (e.g. in linear SDEs/state-space models) are Hurwitz-stable.
+#' If the matrix already satisfies the margin,
+#' it is returned unchanged.
+#'
+#' The projection is performed by subtracting a multiple of the identity:
+#' \deqn{x^\star = x - (\alpha + \text{margin}) I,}
+#' where \eqn{\alpha = \max \Re\{\lambda_i(x)\}} is the spectral abscissa.
+#'
+#' @author Ivan Jacob Agaloos Pesigan
+#'
+#' @param x Numeric square matrix.
+#' @param margin Positive numeric.
+#'   Target buffer inside the Hurwitz region;
+#'   the result satisfies
+#'   \eqn{\max \Re\{\lambda_i(x^\star)\} \le -\text{margin}}
+#'   (default `1e-3`).
+#'
+#' @return A numeric matrix of the same dimensions as `x`,
+#'   shifted if necessary to satisfy the Hurwitz stability constraint.
+#'
+#' @examples
+#' # Unstable (spectral abscissa >= 0):
+#' x <- matrix(
+#'   data = c(
+#'     0.10, -0.40,
+#'     0.50, 0.20
+#'   ),
+#'   nrow = 2
+#' )
+#' SpectralAbscissa(x = x) # >= 0
+#' SpectralAbscissa(x = ProjectToHurwitz(x = x)) # <= -1e-3 (default margin)
+#'
+#' # Already Hurwitz-stable is returned unchanged up to numerics:
+#' x <- matrix(
+#'   data = c(
+#'     -0.50, -0.20,
+#'      1.00, -0.30
+#'   ),
+#'   nrow = 2
+#' )
+#' SpectralAbscissa(x = x) # < 0
+#' identical(ProjectToHurwitz(x = x), x)
+#'
+#' @family Simulation of State Space Models Data Functions
+#' @keywords simStateSpace stability linsde
+#' @export
+ProjectToHurwitz <- function(x, margin = 1e-3) {
+    .Call(`_simStateSpace_ProjectToHurwitz`, x, margin)
+}
+
+#' Project Matrix to Stability
+#'
+#' Scales a square matrix
+#' so that its spectral radius
+#' is strictly less than 1 by a specified stability margin.
+#' This is useful for ensuring that transition matrices
+#' in state space or vector autoregressive (VAR) models are stationary.
+#' If the matrix is already within the margin,
+#' it is returned unchanged.
+#'
+#' The projection is performed
+#' by multiplying the matrix by a constant factor
+#' \eqn{c = \frac{\text{margin}}{\rho + \text{tol}}},
+#' where \eqn{\rho} is the spectral radius and `tol`
+#' is a small positive number to prevent division by zero.
+#'
+#' @author Ivan Jacob Agaloos Pesigan
+#'
+#' @param x Numeric square matrix.
+#' @param margin Double in \eqn{(0, 1)}.
+#'   Target upper bound for the spectral
+#'   radius (default = 0.98).
+#' @param tol Small positive double
+#'   added to the denominator in the scaling
+#'   factor to avoid division by zero
+#'   (default `1e-12`).
+#'
+#' @return A numeric matrix of the same dimensions as `x`,
+#'   scaled if necessary to satisfy the stability constraint.
+#'
+#' @examples
+#' # Matrix with eigenvalues greater than 1
+#' x <- matrix(
+#'   data = c(
+#'     1.2, 0.3,
+#'     0.4, 0.9
+#'   ),
+#'   nrow = 2
+#' )
+#' SpectralRadius(x = x) # > 1
+#' SpectralRadius(x = ProjectToStability(x = x))  # < 1
+#'
+#' # Matrix already stable is returned unchanged
+#' x <- matrix(
+#'   data = c(
+#'     0.5, 0.3,
+#'     0.2, 0.4
+#'   ),
+#'   nrow = 2
+#' )
+#' identical(ProjectToStability(x = x), x)
+#'
+#' @family Simulation of State Space Models Data Functions
+#' @keywords simStateSpace stability ssm
+#' @export
+ProjectToStability <- function(x, margin = 0.98, tol = 1e-12) {
+    .Call(`_simStateSpace_ProjectToStability`, x, margin, tol)
+}
+
+#' Simulate Intercept Vectors
+#' in a Discrete-Time Vector Autoregressive Model
 #' from the Multivariate Normal Distribution
 #'
-#' This function simulates random transition matrices
+#' This function simulates random intercept vectors
+#' in a discrete-time vector autoregressive model
 #' from the multivariate normal distribution.
-#' The function ensures that the generated transition matrices are stationary
-#' using [TestStationarity()].
+#'
+#' @author Ivan Jacob Agaloos Pesigan
+#'
+#' @param n Positive integer.
+#'   Number of replications.
+#' @param alpha Numeric vector.
+#'   Intercept (\eqn{\boldsymbol{\alpha}}).
+#' @param vcov_alpha_l Numeric matrix.
+#'   Cholesky factorization (`t(chol(vcov_alpha))`)
+#'   of the sampling variance-covariance matrix of
+#'   \eqn{\boldsymbol{\alpha}}.
+#' @return Returns a list of random intercept vectors.
+#'
+#' @examples
+#' n <- 10
+#' alpha <- c(0, 0, 0)
+#' vcov_alpha_l <- t(chol(0.001 * diag(3)))
+#' SimAlphaN(n = n, alpha = alpha, vcov_alpha_l = vcov_alpha_l)
+#'
+#' @family Simulation of State Space Models Data Functions
+#' @keywords simStateSpace ssm
+#' @export
+SimAlphaN <- function(n, alpha, vcov_alpha_l) {
+    .Call(`_simStateSpace_SimAlphaN`, n, alpha, vcov_alpha_l)
+}
+
+#' Simulate Transition Matrices
+#' from the Multivariate Normal Distribution
+#' and Project to Stability
+#'
+#' This function simulates random transition matrices
+#' from the multivariate normal distribution
+#' then projects each draw to the stability region
+#' using [ProjectToStability()].
 #'
 #' @author Ivan Jacob Agaloos Pesigan
 #'
@@ -208,8 +373,62 @@ LinSDE2SSM <- function(iota, phi, sigma_l, delta_t) {
 #'   The transition matrix (\eqn{\boldsymbol{\beta}}).
 #' @param vcov_beta_vec_l Numeric matrix.
 #'   Cholesky factorization (`t(chol(vcov_beta_vec))`)
-#'   of the sampling variance-covariance matrix
+#'   of the sampling variance-covariance matrix of
 #'   \eqn{\mathrm{vec} \left( \boldsymbol{\beta} \right)}.
+#' @param margin Double in \eqn{(0, 1)}.
+#'   Target upper bound for the spectral radius
+#'   (default = 0.98).
+#' @param tol Small positive double added to the denominator
+#'   in the scaling factor to avoid division by zero
+#'   (default = 1e-12).
+#' @return Returns a list of random transition matrices.
+#'
+#' @examples
+#' n <- 10
+#' beta <- matrix(
+#'   data = c(
+#'     0.7, 0.5, -0.1,
+#'     0.0, 0.6, 0.4,
+#'     0, 0, 0.5
+#'   ),
+#'   nrow = 3
+#' )
+#' vcov_beta_vec_l <- t(chol(0.001 * diag(9)))
+#' SimBetaN2(n = n, beta = beta, vcov_beta_vec_l = vcov_beta_vec_l)
+#'
+#' @family Simulation of State Space Models Data Functions
+#' @keywords simStateSpace ssm
+#' @export
+SimBetaN2 <- function(n, beta, vcov_beta_vec_l, margin = 0.98, tol = 1e-12) {
+    .Call(`_simStateSpace_SimBetaN2`, n, beta, vcov_beta_vec_l, margin, tol)
+}
+
+#' Simulate Transition Matrices
+#' from the Multivariate Normal Distribution
+#'
+#' This function simulates random transition matrices
+#' from the multivariate normal distribution.
+#' The function ensures that the generated transition matrices are stationary
+#' using [TestStationarity()] with a rejection sampling approach.
+#'
+#' @author Ivan Jacob Agaloos Pesigan
+#'
+#' @param n Positive integer.
+#'   Number of replications.
+#' @param beta Numeric matrix.
+#'   The transition matrix (\eqn{\boldsymbol{\beta}}).
+#' @param vcov_beta_vec_l Numeric matrix.
+#'   Cholesky factorization (`t(chol(vcov_beta_vec))`)
+#'   of the sampling variance-covariance matrix of
+#'   \eqn{\mathrm{vec} \left( \boldsymbol{\beta} \right)}.
+#' @param beta_lbound Optional numeric matrix of same dim as `beta`.
+#'   Use NA for no lower bound.
+#' @param beta_ubound Optional numeric matrix of same dim as `beta`.
+#'   Use NA for no upper bound.
+#' @param bound Logical;
+#'   if TRUE, resample until all elements respect bounds (NA bounds ignored).
+#' @param max_iter Safety cap on resampling attempts per draw.
+#' @return Returns a list of random transition matrices.
 #'
 #' @examples
 #' n <- 10
@@ -227,8 +446,205 @@ LinSDE2SSM <- function(iota, phi, sigma_l, delta_t) {
 #' @family Simulation of State Space Models Data Functions
 #' @keywords simStateSpace ssm
 #' @export
-SimBetaN <- function(n, beta, vcov_beta_vec_l) {
-    .Call(`_simStateSpace_SimBetaN`, n, beta, vcov_beta_vec_l)
+SimBetaN <- function(n, beta, vcov_beta_vec_l, beta_lbound = NULL, beta_ubound = NULL, bound = FALSE, max_iter = 100000L) {
+    .Call(`_simStateSpace_SimBetaN`, n, beta, vcov_beta_vec_l, beta_lbound, beta_ubound, bound, max_iter)
+}
+
+#' Simulate Diagonal Covariance Matrices
+#' from the Multivariate Normal Distribution
+#'
+#' This function simulates random diagonal covariance matrices
+#' from the multivariate normal distribution.
+#' The function ensures that the generated covariance matrices
+#' are positive semi-definite.
+#'
+#' @author Ivan Jacob Agaloos Pesigan
+#'
+#' @param n Positive integer.
+#'   Number of replications.
+#' @param sigma_diag Numeric matrix.
+#'   The covariance matrix
+#'   (\eqn{\boldsymbol{\Sigma}}).
+#' @param vcov_sigma_diag_l Numeric matrix.
+#'   Cholesky factorization (`t(chol(vcov_sigma_vech))`)
+#'   of the sampling variance-covariance matrix of
+#'   \eqn{\mathrm{vech} \left( \boldsymbol{\Sigma} \right)}.
+#' @return Returns a list of random diagonal covariance matrices.
+#'
+#' @examples
+#' n <- 10
+#' sigma_diag <- c(1, 1, 1)
+#' vcov_sigma_diag_l <- t(chol(0.001 * diag(3)))
+#' SimCovDiagN(
+#'   n = n,
+#'   sigma_diag = sigma_diag,
+#'   vcov_sigma_diag_l = vcov_sigma_diag_l
+#' )
+#'
+#' @family Simulation of State Space Models Data Functions
+#' @keywords simStateSpace ssm
+#' @export
+SimCovDiagN <- function(n, sigma_diag, vcov_sigma_diag_l) {
+    .Call(`_simStateSpace_SimCovDiagN`, n, sigma_diag, vcov_sigma_diag_l)
+}
+
+#' Simulate Covariance Matrices
+#' from the Multivariate Normal Distribution
+#'
+#' This function simulates random covariance matrices
+#' from the multivariate normal distribution.
+#' The function ensures that the generated covariance matrices
+#' are positive semi-definite.
+#'
+#' @author Ivan Jacob Agaloos Pesigan
+#'
+#' @param n Positive integer.
+#'   Number of replications.
+#' @param sigma Numeric matrix.
+#'   The covariance matrix
+#'   (\eqn{\boldsymbol{\Sigma}}).
+#' @param vcov_sigma_vech_l Numeric matrix.
+#'   Cholesky factorization (`t(chol(vcov_sigma_vech))`)
+#'   of the sampling variance-covariance matrix of
+#'   \eqn{\mathrm{vech} \left( \boldsymbol{\Sigma} \right)}.
+#' @return Returns a list of random covariance matrices.
+#'
+#' @examples
+#' n <- 10
+#' sigma <- matrix(
+#'   data = c(
+#'     1.0, 0.5, 0.3,
+#'     0.5, 1.0, 0.4,
+#'     0.3, 0.4, 1.0
+#'   ),
+#'   nrow = 3
+#' )
+#' vcov_sigma_vech_l <- t(
+#'   chol(
+#'     0.001 * diag(3 * (3 + 1) / 2)
+#'   )
+#' )
+#' SimCovN(
+#'   n = n,
+#'   sigma = sigma,
+#'   vcov_sigma_vech_l = vcov_sigma_vech_l
+#' )
+#'
+#' @family Simulation of State Space Models Data Functions
+#' @keywords simStateSpace ssm
+#' @export
+SimCovN <- function(n, sigma, vcov_sigma_vech_l) {
+    .Call(`_simStateSpace_SimCovN`, n, sigma, vcov_sigma_vech_l)
+}
+
+#' Simulate Intercept Vectors
+#' in a Continuous-Time Vector Autoregressive Model
+#' from the Multivariate Normal Distribution
+#'
+#' This function simulates random intercept vectors
+#' in a continuous-time vector autoregressive model
+#' from the multivariate normal distribution.
+#'
+#' @author Ivan Jacob Agaloos Pesigan
+#'
+#' @param n Positive integer.
+#'   Number of replications.
+#' @param iota Numeric vector.
+#'   Intercept (\eqn{\boldsymbol{\iota}}).
+#' @param vcov_iota_l Numeric matrix.
+#'   Cholesky factorization (`t(chol(vcov_iota))`)
+#'   of the sampling variance-covariance matrix of
+#'   \eqn{\boldsymbol{\iota}}.
+#' @return Returns a list of random intercept vectors.
+#'
+#' @examples
+#' n <- 10
+#' iota <- c(0, 0, 0)
+#' vcov_iota_l <- t(chol(0.001 * diag(3)))
+#' SimIotaN(n = n, iota = iota, vcov_iota_l = vcov_iota_l)
+#'
+#' @family Simulation of State Space Models Data Functions
+#' @keywords simStateSpace ssm
+#' @export
+SimIotaN <- function(n, iota, vcov_iota_l) {
+    .Call(`_simStateSpace_SimIotaN`, n, iota, vcov_iota_l)
+}
+
+#' Simulate Intercept Vectors
+#' in a Discrete-Time Vector Autoregressive Model
+#' from the Multivariate Normal Distribution
+#'
+#' This function simulates random intercept vectors
+#' in a discrete-time vector autoregressive model
+#' from the multivariate normal distribution.
+#'
+#' @author Ivan Jacob Agaloos Pesigan
+#'
+#' @param n Positive integer.
+#'   Number of replications.
+#' @param nu Numeric vector.
+#'   Intercept (\eqn{\boldsymbol{\nu}}).
+#' @param vcov_nu_l Numeric matrix.
+#'   Cholesky factorization (`t(chol(vcov_nu))`)
+#'   of the sampling variance-covariance matrix of
+#'   \eqn{\boldsymbol{\nu}}.
+#' @return Returns a list of random intercept vectors.
+#'
+#' @examples
+#' n <- 10
+#' nu <- c(0, 0, 0)
+#' vcov_nu_l <- t(chol(0.001 * diag(3)))
+#' SimNuN(n = n, nu = nu, vcov_nu_l = vcov_nu_l)
+#'
+#' @family Simulation of State Space Models Data Functions
+#' @keywords simStateSpace ssm
+#' @export
+SimNuN <- function(n, nu, vcov_nu_l) {
+    .Call(`_simStateSpace_SimNuN`, n, nu, vcov_nu_l)
+}
+
+#' Simulate Random Drift Matrices
+#' from the Multivariate Normal Distribution
+#' and Project to Hurwitz
+#'
+#' This function simulates random dirft matrices
+#' from the multivariate normal distribution
+#' then projects each draw to the Hurwitz-stable region
+#' using [ProjectToHurwitz()].
+#'
+#' @author Ivan Jacob Agaloos Pesigan
+#'
+#' @param n Positive integer.
+#'   Number of replications.
+#' @param phi Numeric matrix.
+#'   The drift matrix (\eqn{\boldsymbol{\Phi}}).
+#' @param vcov_phi_vec_l Numeric matrix.
+#'   Cholesky factorization (`t(chol(vcov_phi_vec))`)
+#'   of the sampling variance-covariance matrix of
+#'   \eqn{\mathrm{vec} \left( \boldsymbol{\Phi} \right)}.
+#' @param margin Positive numeric.
+#'   Target buffer so that the spectral abscissa
+#'   is \eqn{\le -\text{margin}} (default `1e-3`).
+#' @return Returns a list of random drift matrices.
+#'
+#' @examples
+#' n <- 10
+#' phi <- matrix(
+#'   data = c(
+#'     -0.357, 0.771, -0.450,
+#'     0.0, -0.511, 0.729,
+#'     0, 0, -0.693
+#'   ),
+#'   nrow = 3
+#' )
+#' vcov_phi_vec_l <- t(chol(0.001 * diag(9)))
+#' SimPhiN2(n = n, phi = phi, vcov_phi_vec_l = vcov_phi_vec_l)
+#'
+#' @family Simulation of State Space Models Data Functions
+#' @keywords simStateSpace linsde
+#' @export
+SimPhiN2 <- function(n, phi, vcov_phi_vec_l, margin = 1e-3) {
+    .Call(`_simStateSpace_SimPhiN2`, n, phi, vcov_phi_vec_l, margin)
 }
 
 #' Simulate Random Drift Matrices
@@ -247,8 +663,16 @@ SimBetaN <- function(n, beta, vcov_beta_vec_l) {
 #'   The drift matrix (\eqn{\boldsymbol{\Phi}}).
 #' @param vcov_phi_vec_l Numeric matrix.
 #'   Cholesky factorization (`t(chol(vcov_phi_vec))`)
-#'   of the sampling variance-covariance matrix
+#'   of the sampling variance-covariance matrix of
 #'   \eqn{\mathrm{vec} \left( \boldsymbol{\Phi} \right)}.
+#' @param phi_lbound Optional numeric matrix of same dim as `phi`.
+#'   Use NA for no lower bound.
+#' @param phi_ubound Optional numeric matrix of same dim as `phi`.
+#'   Use NA for no upper bound.
+#' @param bound Logical;
+#'   if TRUE, resample until all elements respect bounds (NA bounds ignored).
+#' @param max_iter Safety cap on resampling attempts per draw.
+#' @return Returns a list of random drift matrices.
 #'
 #' @examples
 #' n <- 10
@@ -266,8 +690,8 @@ SimBetaN <- function(n, beta, vcov_beta_vec_l) {
 #' @family Simulation of State Space Models Data Functions
 #' @keywords simStateSpace linsde
 #' @export
-SimPhiN <- function(n, phi, vcov_phi_vec_l) {
-    .Call(`_simStateSpace_SimPhiN`, n, phi, vcov_phi_vec_l)
+SimPhiN <- function(n, phi, vcov_phi_vec_l, phi_lbound = NULL, phi_ubound = NULL, bound = FALSE, max_iter = 100000L) {
+    .Call(`_simStateSpace_SimPhiN`, n, phi, vcov_phi_vec_l, phi_lbound, phi_ubound, bound, max_iter)
 }
 
 .SimSSMFixed0 <- function(n, time, delta_t, mu0, sigma0_l, alpha, beta, psi_l, nu, lambda, theta_l) {
@@ -328,6 +752,150 @@ SimPhiN <- function(n, phi, vcov_phi_vec_l) {
 
 .SolveSyl <- function(A, B, C) {
     .Call(`_simStateSpace_SolveSyl`, A, B, C)
+}
+
+#' Spectral Abscissa
+#'
+#' Returns the maximum real part of the eigenvalues of a square matrix.
+#' For continuous-time stability (Hurwitz),
+#' a matrix is stable if the spectral abscissa is strictly less than 0.
+#'
+#' @author Ivan Jacob Agaloos Pesigan
+#'
+#' @param x Numeric square matrix.
+#'
+#' @return Numeric value \eqn{\alpha(x) = \max \Re(\lambda_i(x))}.
+#'
+#' @examples
+#' # Hurwitz-stable (spectral abscissa < 0):
+#' x <- matrix(
+#'   data = c(
+#'     -0.5, -0.2,
+#'      1.0, -0.3
+#'   ),
+#'   nrow = 2
+#' )
+#' SpectralAbscissa(x = x) # < 0
+#'
+#' # Unstable (spectral abscissa > 0):
+#' x <- matrix(
+#'   data = c(
+#'      0.10, 0.50,
+#'     -0.40, 0.20
+#'   ),
+#'   nrow = 2
+#' )
+#' SpectralAbscissa(x = x) # > 0
+#'
+#' @keywords simStateSpace stability linsde
+#' @export
+SpectralAbscissa <- function(x) {
+    .Call(`_simStateSpace_SpectralAbscissa`, x)
+}
+
+#' Spectral Radius
+#'
+#' Computes the spectral radius of a square matrix,
+#' defined as the maximum modulus (absolute value) of its eigenvalues.
+#' The spectral radius is often used to assess the stability of systems
+#' such as vector autoregressive (VAR) models:
+#' a system is considered stationary
+#' if the spectral radius of its transition matrix is strictly less than 1.
+#'
+#' @author Ivan Jacob Agaloos Pesigan
+#'
+#' @param x Numeric square matrix.
+#'
+#' @return Numeric value representing the spectral radius of `x`.
+#'
+#' @examples
+#' # Matrix with eigenvalues less than 1
+#' x <- matrix(
+#'   data = c(
+#'     0.5, 0.3,
+#'     0.2, 0.4
+#'   ),
+#'   nrow = 2
+#' )
+#' SpectralRadius(x)
+#'
+#' # Matrix with eigenvalues greater than 1
+#' y <- matrix(
+#'   data = c(
+#'     1.2, 0.3,
+#'     0.4, 0.9
+#'   ),
+#'   nrow = 2
+#' )
+#' SpectralRadius(y)
+#'
+#' @family Simulation of State Space Models Data Functions
+#' @keywords simStateSpace stability ssm
+#' @export
+SpectralRadius <- function(x) {
+    .Call(`_simStateSpace_SpectralRadius`, x)
+}
+
+.SSMCovEta <- function(beta, psi) {
+    .Call(`_simStateSpace_SSMCovEta`, beta, psi)
+}
+
+.SSMCovY <- function(lambda, theta, cov_eta) {
+    .Call(`_simStateSpace_SSMCovY`, lambda, theta, cov_eta)
+}
+
+.SSMMeanEta <- function(beta, alpha) {
+    .Call(`_simStateSpace_SSMMeanEta`, beta, alpha)
+}
+
+.SSMMeanY <- function(nu, lambda, mean_eta) {
+    .Call(`_simStateSpace_SSMMeanY`, nu, lambda, mean_eta)
+}
+
+#' Test Hurwitz Stability of a Drift Matrix
+#'
+#' Returns `TRUE` iff the drift matrix \eqn{\boldsymbol{\Phi}}
+#' is Hurwitz-stable,
+#' i.e., all eigenvalues have real parts strictly less than `-eps`.
+#' Setting `eps = 0` enforces the usual strict condition
+#' \eqn{\max \Re\{\lambda_i(\boldsymbol{\Phi})\} < 0}.
+#' A small positive `eps` (e.g., `1e-12`) can be used
+#' to guard against floating-point round-off.
+#'
+#' @author Ivan Jacob Agaloos Pesigan
+#'
+#' @param phi Numeric matrix.
+#'   The drift matrix (\eqn{\boldsymbol{\Phi}}).
+#' @param eps Nonnegative numeric tolerance (default `0.0`).
+#'   The test checks \eqn{\Re(\lambda_i) < -\text{eps}} for all eigenvalues.
+#'
+#' @examples
+#' # Unstable example (spectral abscissa >= 0):
+#' phi <- matrix(
+#'   data = c(
+#'     0.10, -0.40,
+#'     0.50, 0.20
+#'   ),
+#'   nrow = 2
+#' )
+#' TestPhiHurwitz(phi = phi) # FALSE
+#'
+#' # Stable example (all real parts < 0):
+#' phi <- matrix(
+#'   data = c(
+#'     -0.50, -0.20,
+#'      1.00, -0.30
+#'   ),
+#'   nrow = 2
+#' )
+#' TestPhiHurwitz(phi = phi) # TRUE
+#' TestPhiHurwitz(phi = phi, eps = 1e-12) # also TRUE with tolerance
+#'
+#' @family Simulation of State Space Models Data Functions
+#' @keywords simStateSpace test linsde
+#' @export
+TestPhiHurwitz <- function(phi, eps = 0.0) {
+    .Call(`_simStateSpace_TestPhiHurwitz`, phi, eps)
 }
 
 #' Test the Drift Matrix

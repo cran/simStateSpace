@@ -1,3 +1,15 @@
+# simStateSpace 1.2.11
+
+## Patch
+
+* Added the `SimAlphaN()`, `SimIotaN()`, and  `SimNuN()` functions.
+* Added the `LinSDECovEta()`, `LinSDECovY()`, `LinSDEMeanEta()` and `LinSDEMeanY()` functions. Removed the `LinSDECov()` and `LinSDEMean()` functions.
+* Added the `SSMCovEta()`, `SSMCovY()`, `SSMMeanEta()` and `SSMMeanY()` functions.
+* Added the `SimCovN()` and `SimCovDiagN()` functions.
+* Added the `SimBetaN2()` and `SimPhiN2()` functions.
+* Transition matrices from `SimBetaN()` can now be generated with optional bounds.
+* Drift matrices from `SimPhiN()` can now be generated with optional bounds.
+
 # simStateSpace 1.2.10
 
 ## Patch
