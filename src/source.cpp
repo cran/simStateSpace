@@ -6,11 +6,12 @@
 #include <RcppArmadillo.h>
 // [[Rcpp::depends(RcppArmadillo)]]
 
-bool TestPhi(const arma::mat& phi);
+bool TestPhi(const arma::mat& phi, const double margin,
+             const double auto_ubound);
 
-bool TestStability(const arma::mat& x);
+bool TestStability(const arma::mat& x, const double margin);
 
-bool TestStationarity(const arma::mat& x);
+bool TestStationarity(const arma::mat& x, const double margin);
 
 double SpectralRadius(const arma::mat& x);
 
@@ -558,9 +559,6 @@ Rcpp::List SimBetaN2(const arma::uword& n, const arma::mat& beta,
 #include <RcppArmadillo.h>
 // [[Rcpp::depends(RcppArmadillo)]]
 
-// Assumed to exist in your compile unit; keep your original implementation.
-// bool TestStationarity(const arma::mat& x);
-
 inline bool in_bounds_element(double x, double lb, double ub, bool has_lb,
                               bool has_ub) {
   // Treat non-finite bounds (NA/NaN/Inf) as "no bound" on that side
@@ -603,6 +601,8 @@ inline bool matrix_in_bounds(const arma::mat& x, const arma::mat* lb_ptr,
 //'   Cholesky factorization (`t(chol(vcov_beta_vec))`)
 //'   of the sampling variance-covariance matrix of
 //'   \eqn{\mathrm{vec} \left( \boldsymbol{\beta} \right)}.
+//' @param margin Numeric scalar specifying the stationarity threshold.
+//'   Values less than 1 indicate stricter stationarity criteria.
 //' @param beta_lbound Optional numeric matrix of same dim as `beta`.
 //'   Use NA for no lower bound.
 //' @param beta_ubound Optional numeric matrix of same dim as `beta`.
@@ -631,7 +631,7 @@ inline bool matrix_in_bounds(const arma::mat& x, const arma::mat* lb_ptr,
 // [[Rcpp::export]]
 Rcpp::List SimBetaN(
     const arma::uword& n, const arma::mat& beta,
-    const arma::mat& vcov_beta_vec_l,
+    const arma::mat& vcov_beta_vec_l, const double margin = 1.0,
     Rcpp::Nullable<Rcpp::NumericMatrix> beta_lbound = R_NilValue,
     Rcpp::Nullable<Rcpp::NumericMatrix> beta_ubound = R_NilValue,
     const bool bound = false, const arma::uword max_iter = 100000) {
@@ -708,7 +708,8 @@ Rcpp::List SimBetaN(
       beta_i = arma::reshape(beta_vec_i, nr, nc);
 
       if (!bounds_ok(beta_i)) continue;
-      if (!TestStationarity(beta_i)) continue;
+
+      if (!TestStationarity(beta_i, margin)) continue;
 
       out[i] = beta_i;
       break;
@@ -1052,6 +1053,13 @@ Rcpp::List SimPhiN2(const arma::uword& n, const arma::mat& phi,
 //'   Cholesky factorization (`t(chol(vcov_phi_vec))`)
 //'   of the sampling variance-covariance matrix of
 //'   \eqn{\mathrm{vec} \left( \boldsymbol{\Phi} \right)}.
+//' @param margin Numeric scalar specifying the stability threshold
+//'   for the real part of the eigenvalues.
+//'   The default `0.0` corresponds to the imaginary axis;
+//'   values less than `0.0` enforce a stricter stability margin.
+//' @param auto_ubound Numeric scalar specifying the upper bound
+//'   for the diagonal elements of \eqn{\boldsymbol{\Phi}}.
+//'   Default is `0.0`, requiring all diagonal values to be \eqn{\leq 0}.
 //' @param phi_lbound Optional numeric matrix of same dim as `phi`.
 //'   Use NA for no lower bound.
 //' @param phi_ubound Optional numeric matrix of same dim as `phi`.
@@ -1079,7 +1087,8 @@ Rcpp::List SimPhiN2(const arma::uword& n, const arma::mat& phi,
 //' @export
 // [[Rcpp::export]]
 Rcpp::List SimPhiN(const arma::uword& n, const arma::mat& phi,
-                   const arma::mat& vcov_phi_vec_l,
+                   const arma::mat& vcov_phi_vec_l, const double margin = 0.0,
+                   const double auto_ubound = 0.0,
                    Rcpp::Nullable<Rcpp::NumericMatrix> phi_lbound = R_NilValue,
                    Rcpp::Nullable<Rcpp::NumericMatrix> phi_ubound = R_NilValue,
                    const bool bound = false,
@@ -1151,7 +1160,8 @@ Rcpp::List SimPhiN(const arma::uword& n, const arma::mat& phi,
       phi_i = arma::reshape(phi_vec_i, nr, nc);
 
       if (!bounds_ok(phi_i)) continue;
-      if (!TestPhi(phi_i)) continue;
+
+      if (!TestPhi(phi_i, margin, auto_ubound)) continue;
 
       output[i] = phi_i;
       break;
@@ -2322,6 +2332,13 @@ bool TestPhiHurwitz(const arma::mat& phi, const double eps = 0.0) {
 //'
 //' @param phi Numeric matrix.
 //'   The drift matrix (\eqn{\boldsymbol{\Phi}}).
+//' @param margin Numeric scalar specifying the stability threshold
+//'   for the real part of the eigenvalues.
+//'   The default `0.0` corresponds to the imaginary axis;
+//'   values less than `0.0` enforce a stricter stability margin.
+//' @param auto_ubound Numeric scalar specifying the upper bound
+//'   for the diagonal elements of \eqn{\boldsymbol{\Phi}}.
+//'   Default is `0.0`, requiring all diagonal values to be \eqn{\leq 0}.
 //'
 //' @examples
 //' phi <- matrix(
@@ -2338,10 +2355,12 @@ bool TestPhiHurwitz(const arma::mat& phi, const double eps = 0.0) {
 //' @keywords simStateSpace test linsde
 //' @export
 // [[Rcpp::export]]
-bool TestPhi(const arma::mat& phi) {
+bool TestPhi(const arma::mat& phi, const double margin = 0.0,
+             const double auto_ubound = 0.0) {
   arma::vec phi_diag = phi.diag(0);
   arma::cx_vec eigenvalues_phi = arma::eig_gen(phi);
-  return arma::all(arma::real(eigenvalues_phi) < 0) && arma::all(phi_diag <= 0);
+  return arma::all(arma::real(eigenvalues_phi) < margin) &&
+         arma::all(phi_diag <= auto_ubound);
 }
 // -----------------------------------------------------------------------------
 // edit .setup/cpp/simStateSpace-test-stability.cpp
@@ -2361,6 +2380,10 @@ bool TestPhi(const arma::mat& phi) {
 //' @author Ivan Jacob Agaloos Pesigan
 //'
 //' @param x Numeric matrix.
+//' @param margin Numeric scalar specifying the stability threshold
+//'   for the real part of the eigenvalues.
+//'   The default `0.0` corresponds to the imaginary axis;
+//'   values less than `0.0` enforce a stricter stability margin.
 //'
 //' @examples
 //' x <- matrix(
@@ -2377,9 +2400,9 @@ bool TestPhi(const arma::mat& phi) {
 //' @keywords simStateSpace test linsde
 //' @export
 // [[Rcpp::export]]
-bool TestStability(const arma::mat& x) {
+bool TestStability(const arma::mat& x, const double margin = 0.0) {
   arma::cx_vec eigenvalues = arma::eig_gen(x);
-  return arma::all(arma::real(eigenvalues) < 0);
+  return arma::all(arma::real(eigenvalues) < margin);
 }
 // -----------------------------------------------------------------------------
 // edit .setup/cpp/simStateSpace-test-stationarity.cpp
@@ -2399,6 +2422,8 @@ bool TestStability(const arma::mat& x) {
 //' @author Ivan Jacob Agaloos Pesigan
 //'
 //' @param x Numeric matrix.
+//' @param margin Numeric scalar specifying the stationarity threshold.
+//'   Values less than 1 indicate stricter stationarity criteria.
 //'
 //' @examples
 //' x <- matrix(
@@ -2417,7 +2442,7 @@ bool TestStability(const arma::mat& x) {
 //' @keywords simStateSpace test ssm
 //' @export
 // [[Rcpp::export]]
-bool TestStationarity(const arma::mat& x) {
+bool TestStationarity(const arma::mat& x, const double margin = 1.0) {
   arma::cx_vec eigenvalues = arma::eig_gen(x);
-  return arma::all(arma::abs(eigenvalues) < 1.0);
+  return arma::all(arma::abs(eigenvalues) < margin);
 }

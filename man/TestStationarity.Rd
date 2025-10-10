@@ -4,10 +4,13 @@
 \alias{TestStationarity}
 \title{Test Stationarity}
 \usage{
-TestStationarity(x)
+TestStationarity(x, margin = 1)
 }
 \arguments{
 \item{x}{Numeric matrix.}
+
+\item{margin}{Numeric scalar specifying the stationarity threshold.
+Values less than 1 indicate stricter stationarity criteria.}
 }
 \description{
 The function computes the eigenvalues of the input matrix \code{x}.

@@ -6,7 +6,7 @@
 \alias{simStateSpace-package}
 \title{simStateSpace: Simulate Data from State Space Models}
 \description{
-Provides a streamlined and user-friendly framework for simulating data in state space models, particularly when the number of subjects/units (n) exceeds one, a scenario commonly encountered in social and behavioral sciences. For an introduction to state space models in social and behavioral sciences, refer to Chow, Ho, Hamaker, and Dolan (2010) \doi{10.1080/10705511003661553}.
+Provides a streamlined and user-friendly framework for simulating data in state space models, particularly when the number of subjects/units (n) exceeds one, a scenario commonly encountered in social and behavioral sciences. This package was designed to generate data for the simulations performed in Pesigan, Russell, and Chow (2025) \doi{10.1037/met0000779}.
 }
 \seealso{
 Useful links:
@@ -19,6 +19,12 @@ Useful links:
 }
 \author{
 \strong{Maintainer}: Ivan Jacob Agaloos Pesigan \email{r.jeksterslab@gmail.com} (\href{https://orcid.org/0000-0003-4818-8420}{ORCID}) [copyright holder]
+
+Other contributors:
+\itemize{
+  \item Michael A. Russell \email{mar60@psu.edu} (\href{https://orcid.org/0000-0002-3956-604X}{ORCID}) [contributor]
+  \item Sy-Miin Chow \email{quc16@psu.edu} (\href{https://orcid.org/0000-0003-1938-027X}{ORCID}) [contributor]
+}
 
 }
 \keyword{internal}
