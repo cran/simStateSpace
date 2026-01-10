@@ -1,3 +1,15 @@
+# simStateSpace 1.2.14
+
+## Patch
+
+* `CXX_STD = CXX17` in Makevars
+
+# simStateSpace 1.2.13
+
+## Patch
+
+* Added the `SimBetaNCovariate()` and `SimPhiNCovariate()` functions.
+
 # simStateSpace 1.2.12
 
 ## Patch

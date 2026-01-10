@@ -27,9 +27,11 @@ of the latent variables
 The steady-state mean vector
 for the observed variables
 in the linear stochastic differential equation model
-\eqn{\mathrm{Mean} \left( \boldsymbol{\eta} \right)}
+\eqn{\mathrm{Mean} \left( \mathbf{y} \right)}
 is given by
 \deqn{
+  \mathrm{Mean} \left( \mathbf{y} \right)
+  =
   \boldsymbol{\nu}
   +
   \boldsymbol{\Lambda}
@@ -84,12 +86,14 @@ Other Simulation of State Space Models Data Functions:
 \code{\link{SimAlphaN}()},
 \code{\link{SimBetaN}()},
 \code{\link{SimBetaN2}()},
+\code{\link{SimBetaNCovariate}()},
 \code{\link{SimCovDiagN}()},
 \code{\link{SimCovN}()},
 \code{\link{SimIotaN}()},
 \code{\link{SimNuN}()},
 \code{\link{SimPhiN}()},
 \code{\link{SimPhiN2}()},
+\code{\link{SimPhiNCovariate}()},
 \code{\link{SimSSMFixed}()},
 \code{\link{SimSSMIVary}()},
 \code{\link{SimSSMLinGrowth}()},
