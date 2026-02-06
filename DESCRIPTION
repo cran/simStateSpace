@@ -1,6 +1,6 @@
 Package: simStateSpace
 Title: Simulate Data from State Space Models
-Version: 1.2.14
+Version: 1.2.15
 Authors@R: c(
     person(given = "Ivan Jacob Agaloos",
            family = "Pesigan",
@@ -36,7 +36,7 @@ Suggests: knitr, rmarkdown, testthat, expm, dynr
 SystemRequirements: GNU GSL (>= 2.5)
 RoxygenNote: 7.3.3.9000
 NeedsCompilation: yes
-Packaged: 2026-01-09 00:43:04 UTC; root
+Packaged: 2026-02-04 03:35:51 UTC; root
 Author: Ivan Jacob Agaloos Pesigan [aut, cre, cph] (ORCID:
     <https://orcid.org/0000-0003-4818-8420>),
   Michael A. Russell [ctb] (ORCID:
@@ -44,4 +44,4 @@ Author: Ivan Jacob Agaloos Pesigan [aut, cre, cph] (ORCID:
   Sy-Miin Chow [ctb] (ORCID: <https://orcid.org/0000-0003-1938-027X>)
 Maintainer: Ivan Jacob Agaloos Pesigan <r.jeksterslab@gmail.com>
 Repository: CRAN
-Date/Publication: 2026-01-10 07:50:21 UTC
+Date/Publication: 2026-02-06 06:40:06 UTC

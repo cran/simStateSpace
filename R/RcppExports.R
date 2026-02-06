@@ -147,7 +147,7 @@
 #'     (\eqn{\boldsymbol{\alpha}}).
 #'   - `beta`: Numeric matrix.
 #'     Transition matrix relating the values of the latent variables
-#'     from the previous time point to the current time point.
+#'     from the previous time point to the current time point
 #'     (\eqn{\boldsymbol{\beta}}).
 #'   - `psi_l`: Numeric matrix.
 #'     Cholesky factorization (`t(chol(psi))`)
@@ -989,6 +989,14 @@ SpectralRadius <- function(x) {
 
 .SSMCovY <- function(lambda, theta, cov_eta) {
     .Call(`_simStateSpace_SSMCovY`, lambda, theta, cov_eta)
+}
+
+.SSMInterceptEta <- function(beta, mean_eta) {
+    .Call(`_simStateSpace_SSMInterceptEta`, beta, mean_eta)
+}
+
+.SSMInterceptY <- function(mean_y, mean_eta, lambda) {
+    .Call(`_simStateSpace_SSMInterceptY`, mean_y, mean_eta, lambda)
 }
 
 .SSMMeanEta <- function(beta, alpha) {
